@@ -22,8 +22,8 @@
   body {
     background: var(--bg);
     color: var(--text);
-    font-family: system-ui, -apple-system, sans-serif;
-    font-size: 16px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 18px;
     line-height: 1.5;
     min-height: 100vh;
   }
@@ -113,7 +113,8 @@
   #scripts-pool li input[type="text"] {
     flex: 1; padding: 6px 8px;
     background: #fff; border: 1px solid #ddd;
-    color: var(--text); border-radius: 4px; font-size: 13px;
+    color: var(--text); border-radius: 4px;
+    font-family: Arial, Helvetica, sans-serif; font-size: 16px;
   }
   #scripts-pool li input[type="text"]:focus { outline: none; border-color: var(--red); box-shadow: 0 0 0 2px rgba(192,57,43,0.1); }
   .mustrun-label { font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 4px; white-space: nowrap; }
@@ -171,7 +172,7 @@
     background: #1a1a1a;
     color: #fff;
     padding: 10px 16px;
-    font-size: 22px; font-weight: 800;
+    font-size: 24px; font-weight: 800;
     letter-spacing: 1px; text-transform: uppercase;
     border-left: 4px solid var(--red);
   }
@@ -183,7 +184,8 @@
   .section:last-child { border-bottom: none; }
 
   .section-label {
-    font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 13px; text-transform: uppercase; letter-spacing: 1.5px;
     color: #000000; margin-bottom: 6px; font-weight: 700;
   }
 
@@ -191,8 +193,8 @@
     width: 100%; padding: 8px 10px;
     background: #fff; border: 1px solid #ddd;
     color: #000000; border-radius: 4px;
-    font-family: 'Courier New', Courier, monospace;
-    font-size: 16px; line-height: 1.5;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 18px; line-height: 1.5;
     resize: vertical; min-height: 80px;
   }
   textarea:focus { outline: none; border-color: var(--red); box-shadow: 0 0 0 2px rgba(192,57,43,0.12); }
@@ -203,14 +205,14 @@
   textarea[readonly]:focus { border-color: transparent; box-shadow: none; }
 
   .muted-placeholder {
-    color: #444444; font-style: italic; font-size: 16px;
-    font-family: 'Courier New', Courier, monospace;
+    color: #444444; font-style: italic; font-size: 18px;
+    font-family: Arial, Helvetica, sans-serif;
     padding: 4px 0;
   }
 
   .script-display {
-    font-family: 'Courier New', Courier, monospace;
-    font-size: 16px; line-height: 1.5;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 18px; line-height: 1.5;
     padding: 4px 0;
     color: #000000;
   }
