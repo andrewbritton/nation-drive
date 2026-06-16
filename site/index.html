@@ -8,24 +8,15 @@
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --bg: #0d0d0d;
-    --surface: #1a1a1a;
-    --surface2: #222;
-    --border: #333;
-    --text: #f0f0f0;
-    --muted: #666;
-    --amber: #e8b84b;
-    --amber-dim: #a07d28;
-    --error: #e05555;
-    --success: #4caf50;
-    --col4: #1a1608;
-    --col5: #0d1a14;
-    --col6: #0d1219;
-    --col7: #19100d;
-    --col4h: #2a2210;
-    --col5h: #122618;
-    --col6h: #101c28;
-    --col7h: #261810;
+    --bg: #f4f4f4;
+    --card: #ffffff;
+    --border: #e0e0e0;
+    --text: #111111;
+    --muted: #555555;
+    --red: #c0392b;
+    --red-hover: #a93226;
+    --error: #c0392b;
+    --success: #2e7d32;
   }
 
   body {
@@ -45,31 +36,32 @@
     z-index: 1000;
   }
   #login-box {
-    background: var(--surface);
+    background: var(--card);
     border: 1px solid var(--border);
     border-radius: 8px;
     padding: 40px;
     width: 320px;
     text-align: center;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
   }
-  #login-box h1 { font-size: 22px; color: var(--amber); margin-bottom: 6px; }
+  #login-box h1 { font-size: 22px; color: var(--red); margin-bottom: 6px; font-weight: 800; }
   #login-box p { color: var(--muted); margin-bottom: 24px; font-size: 13px; }
   #login-box input[type="password"] {
     width: 100%; padding: 10px 12px;
-    background: var(--bg); border: 1px solid var(--border);
+    background: #fff; border: 1px solid #ddd;
     color: var(--text); border-radius: 4px;
     font-size: 15px; margin-bottom: 12px;
     outline: none;
   }
-  #login-box input[type="password"]:focus { border-color: var(--amber); }
+  #login-box input[type="password"]:focus { border-color: var(--red); box-shadow: 0 0 0 2px rgba(192,57,43,0.15); }
   #login-btn {
     width: 100%; padding: 10px;
-    background: var(--amber); color: #000;
+    background: var(--red); color: #fff;
     border: none; border-radius: 4px;
-    font-size: 14px; font-weight: 700;
+    font-size: 14px; font-weight: 600;
     cursor: pointer;
   }
-  #login-btn:hover { background: #f0c85c; }
+  #login-btn:hover { background: var(--red-hover); }
   #login-error {
     color: var(--error); font-size: 13px;
     margin-top: 10px; min-height: 18px;
@@ -81,37 +73,37 @@
   /* HEADER */
   #header {
     position: sticky; top: 0; z-index: 100;
-    background: #111;
+    background: #fff;
     border-bottom: 1px solid var(--border);
-    padding: 10px 16px;
+    padding: 10px 20px;
     display: flex; align-items: center; gap: 16px;
     flex-wrap: wrap;
   }
-  #header h1 { font-size: 18px; color: var(--amber); font-weight: 800; letter-spacing: 1px; }
-  #header-date { color: var(--muted); font-size: 13px; }
-  #sync-status { font-size: 12px; margin-left: auto; }
+  #header h1 { font-size: 18px; color: var(--red); font-weight: 800; letter-spacing: 0.5px; }
+  #header-date { color: var(--text); font-size: 13px; }
+  #sync-status { font-size: 12px; margin-left: auto; color: var(--muted); }
   #sync-status.ok { color: var(--success); }
   #sync-status.err { color: var(--error); }
   #sync-status.saving { color: var(--muted); }
 
   #controls-toggle {
-    background: var(--surface2); border: 1px solid var(--border);
-    color: var(--text); padding: 5px 12px;
-    border-radius: 4px; cursor: pointer; font-size: 13px;
+    background: var(--red); border: none;
+    color: #fff; padding: 5px 14px;
+    border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: 600;
   }
-  #controls-toggle:hover { border-color: var(--amber); color: var(--amber); }
+  #controls-toggle:hover { background: var(--red-hover); }
 
   /* CONTROLS PANEL */
   #controls-panel {
-    background: var(--surface);
+    background: #f9f9f9;
     border-bottom: 1px solid var(--border);
-    padding: 16px;
+    padding: 20px;
     display: none;
   }
   #controls-panel.open { display: block; }
 
   .controls-inner { max-width: 700px; }
-  .controls-inner h3 { color: var(--amber); font-size: 13px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
+  .controls-inner h3 { color: var(--red); font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 12px; font-weight: 700; }
 
   #scripts-pool { list-style: none; margin-bottom: 10px; }
   #scripts-pool li {
@@ -120,14 +112,14 @@
   }
   #scripts-pool li input[type="text"] {
     flex: 1; padding: 6px 8px;
-    background: var(--bg); border: 1px solid var(--border);
+    background: #fff; border: 1px solid #ddd;
     color: var(--text); border-radius: 4px; font-size: 13px;
   }
-  #scripts-pool li input[type="text"]:focus { outline: none; border-color: var(--amber); }
+  #scripts-pool li input[type="text"]:focus { outline: none; border-color: var(--red); box-shadow: 0 0 0 2px rgba(192,57,43,0.1); }
   .mustrun-label { font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 4px; white-space: nowrap; }
-  .mustrun-label input { accent-color: var(--amber); }
+  .mustrun-label input { accent-color: var(--red); }
   .remove-script {
-    background: none; border: 1px solid var(--border);
+    background: none; border: 1px solid #ddd;
     color: var(--muted); width: 24px; height: 24px;
     border-radius: 3px; cursor: pointer; font-size: 14px; line-height: 1;
     flex-shrink: 0;
@@ -135,11 +127,11 @@
   .remove-script:hover { border-color: var(--error); color: var(--error); }
 
   #add-script-btn {
-    background: none; border: 1px dashed var(--border);
+    background: none; border: 1px dashed #ccc;
     color: var(--muted); padding: 5px 12px;
     border-radius: 4px; cursor: pointer; font-size: 13px;
   }
-  #add-script-btn:hover { border-color: var(--amber); color: var(--amber); }
+  #add-script-btn:hover { border-color: var(--red); color: var(--red); }
 
   .controls-row {
     display: flex; align-items: center; gap: 16px;
@@ -147,59 +139,48 @@
     border-top: 1px solid var(--border);
   }
   #mark-done-btn {
-    background: var(--surface2); border: 1px solid var(--border);
-    color: var(--text); padding: 7px 16px;
-    border-radius: 4px; cursor: pointer; font-size: 13px;
+    background: none; border: 1px solid var(--red);
+    color: var(--red); padding: 7px 16px;
+    border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: 600;
   }
-  #mark-done-btn.confirm { border-color: var(--error); color: var(--error); }
-  #mark-done-btn:hover { border-color: var(--amber); color: var(--amber); }
-  #mark-done-btn.confirm:hover { border-color: var(--error); color: var(--error); background: #2a1010; }
+  #mark-done-btn:hover { background: rgba(192,57,43,0.06); }
+  #mark-done-btn.confirm { background: var(--red); color: #fff; }
+  #mark-done-btn.confirm:hover { background: var(--red-hover); }
   #day-offset-display { color: var(--muted); font-size: 13px; }
 
-  /* GRID */
+  /* HOUR BLOCKS — stacked full-width cards */
   #grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 0;
-    padding: 16px;
-    gap: 12px;
-  }
-
-  @media (max-width: 900px) {
-    #grid { grid-template-columns: repeat(2, 1fr); }
-  }
-  @media (max-width: 500px) {
-    #grid { grid-template-columns: 1fr; }
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 20px;
+    max-width: 860px;
+    margin: 0 auto;
   }
 
   .hour-col {
+    background: var(--card);
     border: 1px solid var(--border);
     border-radius: 6px;
     overflow: hidden;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
     display: flex; flex-direction: column;
   }
 
-  .hour-col[data-hour="4"] { background: var(--col4); }
-  .hour-col[data-hour="5"] { background: var(--col5); }
-  .hour-col[data-hour="6"] { background: var(--col6); }
-  .hour-col[data-hour="7"] { background: var(--col7); }
-
   .hour-header {
-    padding: 10px 12px;
+    background: #1a1a1a;
+    color: #fff;
+    padding: 10px 16px;
     font-size: 15px; font-weight: 800;
     letter-spacing: 1px; text-transform: uppercase;
-    border-bottom: 1px solid var(--border);
+    border-left: 4px solid var(--red);
   }
-  .hour-col[data-hour="4"] .hour-header { background: var(--col4h); color: #d4a83a; }
-  .hour-col[data-hour="5"] .hour-header { background: var(--col5h); color: #3ab87a; }
-  .hour-col[data-hour="6"] .hour-header { background: var(--col6h); color: #4a9fd4; }
-  .hour-col[data-hour="7"] .hour-header { background: var(--col7h); color: #d47a4a; }
 
   .section {
-    padding: 10px 12px;
+    padding: 12px 16px;
     border-bottom: 1px solid var(--border);
   }
-  .section:last-child { border-bottom: none; flex: 1; }
+  .section:last-child { border-bottom: none; }
 
   .section-label {
     font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px;
@@ -207,42 +188,42 @@
   }
 
   textarea {
-    width: 100%; padding: 6px 8px;
-    background: rgba(0,0,0,0.3); border: 1px solid var(--border);
+    width: 100%; padding: 8px 10px;
+    background: #fff; border: 1px solid #ddd;
     color: var(--text); border-radius: 4px;
     font-family: 'Courier New', Courier, monospace;
     font-size: 13px; line-height: 1.5;
     resize: vertical; min-height: 80px;
   }
-  textarea:focus { outline: none; border-color: var(--amber); }
+  textarea:focus { outline: none; border-color: var(--red); box-shadow: 0 0 0 2px rgba(192,57,43,0.12); }
   textarea[readonly] {
-    background: rgba(0,0,0,0.15); border-color: transparent;
+    background: #fafafa; border-color: transparent;
     cursor: default; color: var(--text);
   }
-  textarea[readonly]:focus { border-color: transparent; }
+  textarea[readonly]:focus { border-color: transparent; box-shadow: none; }
 
   .muted-placeholder {
     color: var(--muted); font-style: italic; font-size: 13px;
     font-family: 'Courier New', Courier, monospace;
-    padding: 6px 0;
+    padding: 4px 0;
   }
 
   .script-display {
     font-family: 'Courier New', Courier, monospace;
     font-size: 13px; line-height: 1.5;
-    padding: 6px 0;
+    padding: 4px 0;
     color: var(--text);
   }
-  .script-display .star { color: var(--amber); }
+  .script-display .star { color: var(--red); }
 
   .edit-toggle {
-    background: none; border: 1px solid var(--border);
-    color: var(--muted); padding: 3px 8px;
-    border-radius: 3px; cursor: pointer; font-size: 11px;
+    background: var(--red); border: none;
+    color: #fff; padding: 3px 10px;
+    border-radius: 3px; cursor: pointer; font-size: 11px; font-weight: 600;
     float: right; margin-top: -2px;
   }
-  .edit-toggle:hover { border-color: var(--amber); color: var(--amber); }
-  .edit-toggle.active { border-color: var(--amber); color: var(--amber); background: rgba(232,184,75,0.1); }
+  .edit-toggle:hover { background: var(--red-hover); }
+  .edit-toggle.active { background: var(--red-hover); }
 </style>
 </head>
 <body>
