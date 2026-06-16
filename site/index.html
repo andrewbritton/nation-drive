@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nation Drive</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0d0d0d;
+    --surface: #1a1a1a;
+    --surface2: #222;
+    --border: #333;
+    --text: #f0f0f0;
+    --muted: #666;
+    --amber: #e8b84b;
+    --amber-dim: #a07d28;
+    --error: #e05555;
+    --success: #4caf50;
+    --col4: #1a1608;
+    --col5: #0d1a14;
+    --col6: #0d1219;
+    --col7: #19100d;
+    --col4h: #2a2210;
+    --col5h: #122618;
+    --col6h: #101c28;
+    --col7h: #261810;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: system-ui, -apple-system, sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    min-height: 100vh;
+  }
+
+  /* LOGIN */
+  #login-screen {
+    position: fixed; inset: 0;
+    background: var(--bg);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 1000;
+  }
+  #login-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 40px;
+    width: 320px;
+    text-align: center;
+  }
+  #login-box h1 { font-size: 22px; color: var(--amber); margin-bottom: 6px; }
+  #login-box p { color: var(--muted); margin-bottom: 24px; font-size: 13px; }
+  #login-box input[type="password"] {
+    width: 100%; padding: 10px 12px;
+    background: var(--bg); border: 1px solid var(--border);
+    color: var(--text); border-radius: 4px;
+    font-size: 15px; margin-bottom: 12px;
+    outline: none;
+  }
+  #login-box input[type="password"]:focus { border-color: var(--amber); }
+  #login-btn {
+    width: 100%; padding: 10px;
+    background: var(--amber); color: #000;
+    border: none; border-radius: 4px;
+    font-size: 14px; font-weight: 700;
+    cursor: pointer;
+  }
+  #login-btn:hover { background: #f0c85c; }
+  #login-error {
+    color: var(--error); font-size: 13px;
+    margin-top: 10px; min-height: 18px;
+  }
+
+  /* APP */
+  #app { display: none; }
+
+  /* HEADER */
+  #header {
+    position: sticky; top: 0; z-index: 100;
+    background: #111;
+    border-bottom: 1px solid var(--border);
+    padding: 10px 16px;
+    display: flex; align-items: center; gap: 16px;
+    flex-wrap: wrap;
+  }
+  #header h1 { font-size: 18px; color: var(--amber); font-weight: 800; letter-spacing: 1px; }
+  #header-date { color: var(--muted); font-size: 13px; }
+  #sync-status { font-size: 12px; margin-left: auto; }
+  #sync-status.ok { color: var(--success); }
+  #sync-status.err { color: var(--error); }
+  #sync-status.saving { color: var(--muted); }
+
+  #controls-toggle {
+    background: var(--surface2); border: 1px solid var(--border);
+    color: var(--text); padding: 5px 12px;
+    border-radius: 4px; cursor: pointer; font-size: 13px;
+  }
+  #controls-toggle:hover { border-color: var(--amber); color: var(--amber); }
+
+  /* CONTROLS PANEL */
+  #controls-panel {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 16px;
+    display: none;
+  }
+  #controls-panel.open { display: block; }
+
+  .controls-inner { max-width: 700px; }
+  .controls-inner h3 { color: var(--amber); font-size: 13px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
+
+  #scripts-pool { list-style: none; margin-bottom: 10px; }
+  #scripts-pool li {
+    display: flex; align-items: center; gap: 8px;
+    margin-bottom: 6px;
+  }
+  #scripts-pool li input[type="text"] {
+    flex: 1; padding: 6px 8px;
+    background: var(--bg); border: 1px solid var(--border);
+    color: var(--text); border-radius: 4px; font-size: 13px;
+  }
+  #scripts-pool li input[type="text"]:focus { outline: none; border-color: var(--amber); }
+  .mustrun-label { font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 4px; white-space: nowrap; }
+  .mustrun-label input { accent-color: var(--amber); }
+  .remove-script {
+    background: none; border: 1px solid var(--border);
+    color: var(--muted); width: 24px; height: 24px;
+    border-radius: 3px; cursor: pointer; font-size: 14px; line-height: 1;
+    flex-shrink: 0;
+  }
+  .remove-script:hover { border-color: var(--error); color: var(--error); }
+
+  #add-script-btn {
+    background: none; border: 1px dashed var(--border);
+    color: var(--muted); padding: 5px 12px;
+    border-radius: 4px; cursor: pointer; font-size: 13px;
+  }
+  #add-script-btn:hover { border-color: var(--amber); color: var(--amber); }
+
+  .controls-row {
+    display: flex; align-items: center; gap: 16px;
+    margin-top: 16px; padding-top: 16px;
+    border-top: 1px solid var(--border);
+  }
+  #mark-done-btn {
+    background: var(--surface2); border: 1px solid var(--border);
+    color: var(--text); padding: 7px 16px;
+    border-radius: 4px; cursor: pointer; font-size: 13px;
+  }
+  #mark-done-btn.confirm { border-color: var(--error); color: var(--error); }
+  #mark-done-btn:hover { border-color: var(--amber); color: var(--amber); }
+  #mark-done-btn.confirm:hover { border-color: var(--error); color: var(--error); background: #2a1010; }
+  #day-offset-display { color: var(--muted); font-size: 13px; }
+
+  /* GRID */
+  #grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    padding: 16px;
+    gap: 12px;
+  }
+
+  @media (max-width: 900px) {
+    #grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 500px) {
+    #grid { grid-template-columns: 1fr; }
+  }
+
+  .hour-col {
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+    display: flex; flex-direction: column;
+  }
+
+  .hour-col[data-hour="4"] { background: var(--col4); }
+  .hour-col[data-hour="5"] { background: var(--col5); }
+  .hour-col[data-hour="6"] { background: var(--col6); }
+  .hour-col[data-hour="7"] { background: var(--col7); }
+
+  .hour-header {
+    padding: 10px 12px;
+    font-size: 15px; font-weight: 800;
+    letter-spacing: 1px; text-transform: uppercase;
+    border-bottom: 1px solid var(--border);
+  }
+  .hour-col[data-hour="4"] .hour-header { background: var(--col4h); color: #d4a83a; }
+  .hour-col[data-hour="5"] .hour-header { background: var(--col5h); color: #3ab87a; }
+  .hour-col[data-hour="6"] .hour-header { background: var(--col6h); color: #4a9fd4; }
+  .hour-col[data-hour="7"] .hour-header { background: var(--col7h); color: #d47a4a; }
+
+  .section {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  .section:last-child { border-bottom: none; flex: 1; }
+
+  .section-label {
+    font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px;
+    color: var(--muted); margin-bottom: 6px; font-weight: 700;
+  }
+
+  textarea {
+    width: 100%; padding: 6px 8px;
+    background: rgba(0,0,0,0.3); border: 1px solid var(--border);
+    color: var(--text); border-radius: 4px;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 13px; line-height: 1.5;
+    resize: vertical; min-height: 80px;
+  }
+  textarea:focus { outline: none; border-color: var(--amber); }
+  textarea[readonly] {
+    background: rgba(0,0,0,0.15); border-color: transparent;
+    cursor: default; color: var(--text);
+  }
+  textarea[readonly]:focus { border-color: transparent; }
+
+  .muted-placeholder {
+    color: var(--muted); font-style: italic; font-size: 13px;
+    font-family: 'Courier New', Courier, monospace;
+    padding: 6px 0;
+  }
+
+  .script-display {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 13px; line-height: 1.5;
+    padding: 6px 0;
+    color: var(--text);
+  }
+  .script-display .star { color: var(--amber); }
+
+  .edit-toggle {
+    background: none; border: 1px solid var(--border);
+    color: var(--muted); padding: 3px 8px;
+    border-radius: 3px; cursor: pointer; font-size: 11px;
+    float: right; margin-top: -2px;
+  }
+  .edit-toggle:hover { border-color: var(--amber); color: var(--amber); }
+  .edit-toggle.active { border-color: var(--amber); color: var(--amber); background: rgba(232,184,75,0.1); }
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div id="login-box">
+    <h1>Nation Drive</h1>
+    <p>Enter your password to continue</p>
+    <input type="password" id="password-input" placeholder="Password" autofocus>
+    <button id="login-btn">Enter</button>
+    <div id="login-error"></div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <div id="header">
+    <h1>Nation Drive</h1>
+    <span id="header-date"></span>
+    <span id="sync-status" class="ok">Saved ✓</span>
+    <button id="controls-toggle">Controls</button>
+  </div>
+
+  <div id="controls-panel">
+    <div class="controls-inner">
+      <h3>Read Scripts Pool</h3>
+      <ul id="scripts-pool"></ul>
+      <button id="add-script-btn">+ Add script</button>
+
+      <div class="controls-row">
+        <button id="mark-done-btn">Mark this show as done</button>
+        <span id="day-offset-display"></span>
+      </div>
+    </div>
+  </div>
+
+  <div id="grid">
+    <div class="hour-col" data-hour="4">
+      <div class="hour-header">4pm</div>
+      <div class="section" id="sec-a-4">
+        <div class="section-label">A — Competition Script <button class="edit-toggle" id="comp-edit-btn">Edit</button></div>
+        <div id="comp-readonly" class="muted-placeholder">No script yet</div>
+        <textarea id="comp-textarea" style="display:none" placeholder="Enter competition script…"></textarea>
+      </div>
+      <div class="section" id="sec-b-4">
+        <div class="section-label">B — Question of the Day</div>
+        <textarea id="feature-4" placeholder="Enter question of the day…"></textarea>
+      </div>
+      <div class="section" id="sec-c-4">
+        <div class="section-label">C — Read Script</div>
+        <div id="script-4" class="script-display muted-placeholder">No script assigned</div>
+      </div>
+    </div>
+
+    <div class="hour-col" data-hour="5">
+      <div class="hour-header">5pm</div>
+      <div class="section" id="sec-a-5">
+        <div class="section-label">A — Competition Script</div>
+        <div id="comp-mirror-5" class="muted-placeholder">No script yet</div>
+      </div>
+      <div class="section" id="sec-b-5">
+        <div class="section-label">B — Topical Tune</div>
+        <textarea id="feature-5" placeholder="Enter topical tune…"></textarea>
+      </div>
+      <div class="section" id="sec-c-5">
+        <div class="section-label">C — Read Script</div>
+        <div id="script-5" class="script-display muted-placeholder">No script assigned</div>
+      </div>
+    </div>
+
+    <div class="hour-col" data-hour="6">
+      <div class="hour-header">6pm</div>
+      <div class="section" id="sec-a-6">
+        <div class="section-label">A — Competition Script</div>
+        <div id="comp-mirror-6" class="muted-placeholder">No script yet</div>
+      </div>
+      <div class="section" id="sec-b-6">
+        <div class="section-label">B — What's for Tea</div>
+        <textarea id="feature-6" placeholder="Enter what's for tea…"></textarea>
+      </div>
+      <div class="section" id="sec-c-6">
+        <div class="section-label">C — Read Script</div>
+        <div id="script-6" class="script-display muted-placeholder">No script assigned</div>
+      </div>
+    </div>
+
+    <div class="hour-col" data-hour="7">
+      <div class="hour-header">7pm</div>
+      <div class="section" id="sec-a-7">
+        <div class="section-label">A — Competition Script</div>
+        <div id="comp-mirror-7" class="muted-placeholder">No script yet</div>
+      </div>
+      <div class="section" id="sec-b-7">
+        <div class="section-label">B — Hour Feature</div>
+        <div class="muted-placeholder">Feature slot reserved for future use</div>
+      </div>
+      <div class="section" id="sec-c-7">
+        <div class="section-label">C — Read Script</div>
+        <div id="script-7" class="script-display muted-placeholder">No script assigned</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const PASSWORD = "nationdrive2024";
+  const API = "/api/state";
+  const LS_KEY = "nation-drive-state";
+
+  const defaults = () => ({
+    compScript: "",
+    features: { 4: "", 5: "", 6: "" },
+    scripts: [],
+    dayOffset: 0
+  });
+
+  let state = defaults();
+  let saveTimer = null;
+  let doneConfirm = false;
+  let doneTimer = null;
+  let compEditing = false;
+
+  // --- LOGIN ---
+  const loginScreen = document.getElementById("login-screen");
+  const app = document.getElementById("app");
+  const passwordInput = document.getElementById("password-input");
+  const loginBtn = document.getElementById("login-btn");
+  const loginError = document.getElementById("login-error");
+
+  function tryLogin() {
+    if (passwordInput.value === PASSWORD) {
+      loginScreen.style.display = "none";
+      app.style.display = "block";
+      init();
+    } else {
+      loginError.textContent = "Incorrect password. Please try again.";
+      passwordInput.value = "";
+      passwordInput.focus();
+    }
+  }
+
+  loginBtn.addEventListener("click", tryLogin);
+  passwordInput.addEventListener("keydown", e => { if (e.key === "Enter") tryLogin(); });
+
+  // --- HEADER DATE ---
+  function setDate() {
+    const d = new Date();
+    const opts = { weekday: "long", day: "numeric", month: "long", year: "numeric" };
+    document.getElementById("header-date").textContent = d.toLocaleDateString("en-GB", opts);
+  }
+
+  // --- SYNC STATUS ---
+  function setSyncStatus(status, msg) {
+    const el = document.getElementById("sync-status");
+    el.className = status;
+    el.textContent = msg;
+  }
+
+  // --- STATE LOAD / SAVE ---
+  function lsSave() {
+    localStorage.setItem(LS_KEY, JSON.stringify(state));
+  }
+
+  function lsLoad() {
+    try {
+      const raw = localStorage.getItem(LS_KEY);
+      if (raw) return JSON.parse(raw);
+    } catch(_) {}
+    return null;
+  }
+
+  async function remoteLoad() {
+    try {
+      const res = await fetch(API);
+      if (!res.ok) return null;
+      const data = await res.json();
+      if (!data || typeof data !== "object" || !Object.keys(data).length) return null;
+      return data;
+    } catch(_) {
+      return null;
+    }
+  }
+
+  async function remoteSave() {
+    setSyncStatus("saving", "Saving…");
+    try {
+      const res = await fetch(API, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(state)
+      });
+      if (!res.ok) throw new Error("HTTP " + res.status);
+      setSyncStatus("ok", "Saved ✓");
+    } catch(err) {
+      setSyncStatus("err", "Save failed ✗");
+    }
+  }
+
+  function scheduleSave() {
+    lsSave();
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(remoteSave, 1200);
+  }
+
+  function mergeState(loaded) {
+    const d = defaults();
+    state = {
+      compScript: loaded.compScript ?? d.compScript,
+      features: { ...d.features, ...(loaded.features ?? {}) },
+      scripts: loaded.scripts ?? d.scripts,
+      dayOffset: loaded.dayOffset ?? d.dayOffset
+    };
+  }
+
+  // --- RENDER ---
+  function renderCompScript() {
+    const ta = document.getElementById("comp-textarea");
+    const ro = document.getElementById("comp-readonly");
+    ta.value = state.compScript;
+
+    const txt = state.compScript;
+    const isEmpty = !txt.trim();
+
+    // readonly display
+    if (isEmpty) {
+      ro.className = "muted-placeholder";
+      ro.textContent = "No script yet";
+    } else {
+      ro.className = "script-display";
+      ro.textContent = txt;
+    }
+
+    // mirrors
+    [5, 6, 7].forEach(h => {
+      const m = document.getElementById("comp-mirror-" + h);
+      if (isEmpty) {
+        m.className = "muted-placeholder";
+        m.textContent = "No script yet";
+      } else {
+        m.className = "script-display";
+        m.textContent = txt;
+      }
+    });
+  }
+
+  function assignedScript(hourIndex) {
+    const pool = state.scripts;
+    if (!pool.length) return null;
+    const mustRun = pool.filter(s => s.mustRun);
+    const any = pool;
+    // mustRun scripts rotate within their own pool; fallback to all
+    const src = mustRun.length ? mustRun : any;
+    return src[(state.dayOffset + hourIndex) % src.length];
+  }
+
+  function renderScripts() {
+    [4, 5, 6, 7].forEach((hour, idx) => {
+      const el = document.getElementById("script-" + hour);
+      const s = assignedScript(idx);
+      if (!s) {
+        el.className = "script-display muted-placeholder";
+        el.innerHTML = "No script assigned";
+      } else {
+        el.className = "script-display";
+        if (s.mustRun) {
+          el.innerHTML = '<span class="star">★</span> ' + escHtml(s.title);
+        } else {
+          el.textContent = s.title;
+        }
+      }
+    });
+  }
+
+  function renderFeatures() {
+    [4, 5, 6].forEach(h => {
+      const el = document.getElementById("feature-" + h);
+      if (el) el.value = state.features[h] ?? "";
+    });
+  }
+
+  function renderScriptsPool() {
+    const ul = document.getElementById("scripts-pool");
+    ul.innerHTML = "";
+    state.scripts.forEach((s, i) => {
+      const li = document.createElement("li");
+      li.innerHTML = `
+        <input type="text" value="${escAttr(s.title)}" data-idx="${i}" class="script-title-input" placeholder="Script title">
+        <label class="mustrun-label"><input type="checkbox" ${s.mustRun ? "checked" : ""} data-idx="${i}" class="mustrun-check"> Daily</label>
+        <button class="remove-script" data-idx="${i}" title="Remove">✕</button>
+      `;
+      ul.appendChild(li);
+    });
+  }
+
+  function renderDayOffset() {
+    document.getElementById("day-offset-display").textContent = "Day offset: " + state.dayOffset;
+  }
+
+  function renderAll() {
+    renderCompScript();
+    renderFeatures();
+    renderScripts();
+    renderScriptsPool();
+    renderDayOffset();
+  }
+
+  // --- CONTROLS PANEL ---
+  document.getElementById("controls-toggle").addEventListener("click", () => {
+    document.getElementById("controls-panel").classList.toggle("open");
+  });
+
+  // --- COMP SCRIPT EDIT TOGGLE ---
+  const compEditBtn = document.getElementById("comp-edit-btn");
+  const compTextarea = document.getElementById("comp-textarea");
+  const compReadonly = document.getElementById("comp-readonly");
+
+  compEditBtn.addEventListener("click", () => {
+    compEditing = !compEditing;
+    if (compEditing) {
+      compEditBtn.textContent = "Done";
+      compEditBtn.classList.add("active");
+      compReadonly.style.display = "none";
+      compTextarea.style.display = "block";
+      compTextarea.focus();
+    } else {
+      compEditBtn.textContent = "Edit";
+      compEditBtn.classList.remove("active");
+      compTextarea.style.display = "none";
+      compReadonly.style.display = "block";
+    }
+  });
+
+  compTextarea.addEventListener("input", () => {
+    state.compScript = compTextarea.value;
+    renderCompScript();
+    // keep textarea visible while editing
+    compTextarea.style.display = compEditing ? "block" : "none";
+    compReadonly.style.display = compEditing ? "none" : "block";
+    scheduleSave();
+  });
+
+  // --- FEATURE TEXTAREAS ---
+  [4, 5, 6].forEach(h => {
+    const el = document.getElementById("feature-" + h);
+    if (!el) return;
+    el.addEventListener("input", () => {
+      state.features[h] = el.value;
+      scheduleSave();
+    });
+  });
+
+  // --- SCRIPTS POOL ---
+  document.getElementById("add-script-btn").addEventListener("click", () => {
+    state.scripts.push({ id: Date.now(), title: "", mustRun: false });
+    renderScriptsPool();
+    renderScripts();
+    scheduleSave();
+    // focus the new input
+    const inputs = document.querySelectorAll(".script-title-input");
+    if (inputs.length) inputs[inputs.length - 1].focus();
+  });
+
+  document.getElementById("scripts-pool").addEventListener("input", e => {
+    if (e.target.classList.contains("script-title-input")) {
+      const i = +e.target.dataset.idx;
+      state.scripts[i].title = e.target.value;
+      renderScripts();
+      scheduleSave();
+    }
+  });
+
+  document.getElementById("scripts-pool").addEventListener("change", e => {
+    if (e.target.classList.contains("mustrun-check")) {
+      const i = +e.target.dataset.idx;
+      state.scripts[i].mustRun = e.target.checked;
+      renderScripts();
+      scheduleSave();
+    }
+  });
+
+  document.getElementById("scripts-pool").addEventListener("click", e => {
+    if (e.target.classList.contains("remove-script")) {
+      const i = +e.target.dataset.idx;
+      state.scripts.splice(i, 1);
+      renderScriptsPool();
+      renderScripts();
+      scheduleSave();
+    }
+  });
+
+  // --- MARK DONE ---
+  const markDoneBtn = document.getElementById("mark-done-btn");
+
+  markDoneBtn.addEventListener("click", () => {
+    if (!doneConfirm) {
+      doneConfirm = true;
+      markDoneBtn.textContent = "Confirm — mark done?";
+      markDoneBtn.classList.add("confirm");
+      doneTimer = setTimeout(() => {
+        doneConfirm = false;
+        markDoneBtn.textContent = "Mark this show as done";
+        markDoneBtn.classList.remove("confirm");
+      }, 5000);
+    } else {
+      clearTimeout(doneTimer);
+      doneConfirm = false;
+      markDoneBtn.textContent = "Mark this show as done";
+      markDoneBtn.classList.remove("confirm");
+      state.dayOffset += 1;
+      state.compScript = "";
+      state.features = { 4: "", 5: "", 6: "" };
+      renderAll();
+      scheduleSave();
+    }
+  });
+
+  // --- UTILS ---
+  function escHtml(str) {
+    return String(str).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+  }
+  function escAttr(str) {
+    return String(str).replace(/"/g,"&quot;");
+  }
+
+  // --- INIT ---
+  async function init() {
+    setDate();
+    const remote = await remoteLoad();
+    if (remote) {
+      mergeState(remote);
+      setSyncStatus("ok", "Saved ✓");
+    } else {
+      const local = lsLoad();
+      if (local) {
+        mergeState(local);
+        setSyncStatus("saving", "Offline — local data");
+      }
+    }
+    renderAll();
+  }
+</script>
+</body>
+</html>
