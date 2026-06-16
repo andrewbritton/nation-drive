@@ -190,7 +190,7 @@
     color: #000000; border-radius: 4px;
     font-family: Arial, Helvetica, sans-serif;
     font-size: 18px; line-height: 1.5;
-    resize: vertical; min-height: 80px;
+    resize: none; overflow: hidden;
   }
   textarea:focus { outline: none; border-color: var(--red); box-shadow: 0 0 0 2px rgba(192,57,43,0.12); }
   textarea[readonly] {
@@ -229,7 +229,7 @@
     border-radius: 6px; padding: 12px;
   }
   .rs-item textarea {
-    min-height: 72px; margin-bottom: 8px;
+    margin-bottom: 8px;
     font-family: Arial, Helvetica, sans-serif;
   }
   .rs-item-controls {
@@ -492,6 +492,8 @@
       ro.textContent = txt;
     }
 
+    autoResize(ta);
+
     // mirrors
     [5, 6, 7].forEach(h => {
       const m = document.getElementById("comp-mirror-" + h);
@@ -549,7 +551,7 @@
   function renderFeatures() {
     [4, 5, 6].forEach(h => {
       const el = document.getElementById("feature-" + h);
-      if (el) el.value = state.features[h] ?? "";
+      if (el) { el.value = state.features[h] ?? ""; autoResize(el); }
     });
   }
 
@@ -571,6 +573,7 @@
       `;
       container.appendChild(div);
     });
+    container.querySelectorAll("textarea").forEach(autoResize);
   }
 
   function renderDayOffset() {
@@ -614,6 +617,7 @@
 
   compTextarea.addEventListener("input", () => {
     state.compScript = compTextarea.value;
+    autoResize(compTextarea);
     renderCompScript();
     // keep textarea visible while editing
     compTextarea.style.display = compEditing ? "block" : "none";
@@ -627,6 +631,7 @@
     if (!el) return;
     el.addEventListener("input", () => {
       state.features[h] = el.value;
+      autoResize(el);
       scheduleSave();
     });
   });
@@ -646,6 +651,7 @@
     if (e.target.classList.contains("script-text-input")) {
       const i = +e.target.dataset.idx;
       state.scripts[i].text = e.target.value;
+      autoResize(e.target);
       renderScripts();
       scheduleSave();
     }
@@ -700,6 +706,11 @@
   });
 
   // --- UTILS ---
+  function autoResize(ta) {
+    ta.style.height = 'auto';
+    ta.style.height = ta.scrollHeight + 'px';
+  }
+
   function escHtml(str) {
     return String(str).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
   }
@@ -722,6 +733,7 @@
       }
     }
     renderAll();
+    document.querySelectorAll("textarea").forEach(autoResize);
   }
 </script>
 </body>
