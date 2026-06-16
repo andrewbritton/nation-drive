@@ -134,12 +134,7 @@
   }
   #add-script-btn:hover { border-color: var(--red); color: var(--red); }
 
-  .controls-row {
-    display: flex; align-items: center; gap: 16px;
-    margin-top: 16px; padding-top: 16px;
-    border-top: 1px solid var(--border);
-  }
-  #mark-done-btn {
+#mark-done-btn {
     background: none; border: 1px solid var(--red);
     color: var(--red); padding: 7px 16px;
     border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: 600;
@@ -256,6 +251,12 @@
     border-radius: 4px; cursor: pointer; font-size: 13px;
   }
   .rs-remove:hover { border-color: var(--red); color: var(--red); }
+
+  #show-done-footer {
+    background: #fff; border-top: 1px solid var(--border);
+    padding: 1rem 1.5rem;
+    display: flex; align-items: center; gap: 1rem;
+  }
 </style>
 </head>
 <body>
@@ -286,11 +287,12 @@
       <div id="scripts-pool"></div>
       <button id="add-script-btn">+ Add script</button>
 
-      <div class="controls-row">
-        <button id="mark-done-btn">Mark this show as done</button>
-        <span id="day-offset-display"></span>
-      </div>
     </div>
+  </div>
+
+  <div id="show-done-footer">
+    <button id="mark-done-btn">Mark this show as done</button>
+    <span id="day-offset-display"></span>
   </div>
 
   <div id="grid">
