@@ -226,6 +226,36 @@
   }
   .edit-toggle:hover { background: var(--red-hover); }
   .edit-toggle.active { background: var(--red-hover); }
+
+  /* Read script pool cards */
+  #scripts-pool { display: flex; flex-direction: column; gap: 10px; margin-bottom: 10px; }
+  .rs-item {
+    background: #fff; border: 1.5px solid #ddd;
+    border-radius: 6px; padding: 12px;
+  }
+  .rs-item textarea {
+    min-height: 72px; margin-bottom: 8px;
+    font-family: Arial, Helvetica, sans-serif;
+  }
+  .rs-item-controls {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 8px;
+  }
+  .rs-mustrun-label {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 13px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    color: #333; cursor: pointer;
+  }
+  .rs-mustrun-label input[type="checkbox"] {
+    width: 15px; height: 15px; accent-color: var(--red); cursor: pointer;
+  }
+  .rs-remove {
+    background: none; border: 1px solid #ccc;
+    color: var(--muted); padding: 4px 10px;
+    border-radius: 4px; cursor: pointer; font-size: 13px;
+  }
+  .rs-remove:hover { border-color: var(--red); color: var(--red); }
 </style>
 </head>
 <body>
@@ -252,8 +282,8 @@
 
   <div id="controls-panel">
     <div class="controls-inner">
-      <h3>Read Scripts Pool</h3>
-      <ul id="scripts-pool"></ul>
+      <h3>Read Script Items</h3>
+      <div id="scripts-pool"></div>
       <button id="add-script-btn">+ Add script</button>
 
       <div class="controls-row">
@@ -344,6 +374,7 @@
   });
 
   let state = defaults();
+  let distribution = [null, null, null, null];
   let saveTimer = null;
   let doneConfirm = false;
   let doneTimer = null;
@@ -472,29 +503,42 @@
     });
   }
 
-  function assignedScript(hourIndex) {
-    const pool = state.scripts;
-    if (!pool.length) return null;
-    const mustRun = pool.filter(s => s.mustRun);
-    const any = pool;
-    // mustRun scripts rotate within their own pool; fallback to all
-    const src = mustRun.length ? mustRun : any;
-    return src[(state.dayOffset + hourIndex) % src.length];
+  function distributeReadScripts() {
+    const mustRun = state.scripts.filter(i => i.mustRun);
+    const optional = state.scripts.filter(i => !i.mustRun);
+    const result = [null, null, null, null];
+
+    mustRun.forEach((item, idx) => {
+      const hourIdx = (idx + state.dayOffset) % 4;
+      result[hourIdx] = item.id;
+    });
+
+    let optIdx = state.dayOffset % Math.max(optional.length, 1);
+    for (let h = 0; h < 4; h++) {
+      if (result[h] === null && optional.length > 0) {
+        result[h] = optional[optIdx % optional.length].id;
+        optIdx++;
+      }
+    }
+
+    distribution = result;
   }
 
   function renderScripts() {
     [4, 5, 6, 7].forEach((hour, idx) => {
       const el = document.getElementById("script-" + hour);
-      const s = assignedScript(idx);
+      const assignedId = distribution[idx];
+      const s = assignedId != null ? state.scripts.find(i => i.id === assignedId) : null;
       if (!s) {
         el.className = "script-display muted-placeholder";
         el.innerHTML = "No script assigned";
       } else {
         el.className = "script-display";
+        const display = s.text && s.text.length > 120 ? s.text.slice(0, 120) + "…" : (s.text || "(empty)");
         if (s.mustRun) {
-          el.innerHTML = '<span class="star">★</span> ' + escHtml(s.title);
+          el.innerHTML = '<span class="star">★</span> ' + escHtml(display);
         } else {
-          el.textContent = s.title;
+          el.textContent = display;
         }
       }
     });
@@ -508,16 +552,22 @@
   }
 
   function renderScriptsPool() {
-    const ul = document.getElementById("scripts-pool");
-    ul.innerHTML = "";
+    const container = document.getElementById("scripts-pool");
+    container.innerHTML = "";
     state.scripts.forEach((s, i) => {
-      const li = document.createElement("li");
-      li.innerHTML = `
-        <input type="text" value="${escAttr(s.title)}" data-idx="${i}" class="script-title-input" placeholder="Script title">
-        <label class="mustrun-label"><input type="checkbox" ${s.mustRun ? "checked" : ""} data-idx="${i}" class="mustrun-check"> Daily</label>
-        <button class="remove-script" data-idx="${i}" title="Remove">✕</button>
+      const div = document.createElement("div");
+      div.className = "rs-item";
+      div.dataset.idx = i;
+      div.innerHTML = `
+        <textarea rows="3" placeholder="Paste read script text here…" class="script-text-input" data-idx="${i}">${escHtml(s.text || "")}</textarea>
+        <div class="rs-item-controls">
+          <label class="rs-mustrun-label">
+            <input type="checkbox" class="mustrun-check" data-idx="${i}" ${s.mustRun ? "checked" : ""}> Daily must-run
+          </label>
+          <button class="rs-remove" data-idx="${i}">Remove</button>
+        </div>
       `;
-      ul.appendChild(li);
+      container.appendChild(div);
     });
   }
 
@@ -526,6 +576,7 @@
   }
 
   function renderAll() {
+    distributeReadScripts();
     renderCompScript();
     renderFeatures();
     renderScripts();
@@ -580,19 +631,19 @@
 
   // --- SCRIPTS POOL ---
   document.getElementById("add-script-btn").addEventListener("click", () => {
-    state.scripts.push({ id: Date.now(), title: "", mustRun: false });
+    state.scripts.push({ id: Date.now(), text: "", mustRun: false });
+    distributeReadScripts();
     renderScriptsPool();
     renderScripts();
     scheduleSave();
-    // focus the new input
-    const inputs = document.querySelectorAll(".script-title-input");
+    const inputs = document.querySelectorAll(".script-text-input");
     if (inputs.length) inputs[inputs.length - 1].focus();
   });
 
   document.getElementById("scripts-pool").addEventListener("input", e => {
-    if (e.target.classList.contains("script-title-input")) {
+    if (e.target.classList.contains("script-text-input")) {
       const i = +e.target.dataset.idx;
-      state.scripts[i].title = e.target.value;
+      state.scripts[i].text = e.target.value;
       renderScripts();
       scheduleSave();
     }
@@ -602,15 +653,17 @@
     if (e.target.classList.contains("mustrun-check")) {
       const i = +e.target.dataset.idx;
       state.scripts[i].mustRun = e.target.checked;
+      distributeReadScripts();
       renderScripts();
       scheduleSave();
     }
   });
 
   document.getElementById("scripts-pool").addEventListener("click", e => {
-    if (e.target.classList.contains("remove-script")) {
+    if (e.target.classList.contains("rs-remove")) {
       const i = +e.target.dataset.idx;
       state.scripts.splice(i, 1);
+      distributeReadScripts();
       renderScriptsPool();
       renderScripts();
       scheduleSave();
@@ -638,6 +691,7 @@
       state.dayOffset += 1;
       state.compScript = "";
       state.features = { 4: "", 5: "", 6: "" };
+      distributeReadScripts();
       renderAll();
       scheduleSave();
     }
