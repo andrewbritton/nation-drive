@@ -272,6 +272,28 @@
     color: #000; padding: 8px 0; min-height: 36px;
   }
 
+  #weather-section {
+    background: #1a1a1a; color: #fff;
+    padding: 14px 24px;
+    display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+  }
+  #weather-label {
+    font-size: 11px; font-weight: 700; letter-spacing: 2px;
+    color: #888; white-space: nowrap;
+  }
+  #btn-weather {
+    background: #c0392b; color: #fff;
+    border: none; padding: 7px 14px;
+    font-size: 15px; font-family: Arial, Helvetica, sans-serif;
+    border-radius: 4px; cursor: pointer; white-space: nowrap;
+  }
+  #btn-weather:hover { background: #a93226; }
+  #btn-weather:disabled { background: #555; cursor: wait; }
+  #weather-result {
+    font-size: 18px; font-weight: 600;
+    color: #fff; flex: 1; min-width: 200px;
+  }
+
   #show-done-footer {
     background: #fff; border-top: 1px solid var(--border);
     padding: 1rem 1.5rem;
@@ -392,6 +414,12 @@
         <div id="script-7" class="script-display muted-placeholder">No script assigned</div>
       </div>
     </div>
+  </div>
+
+  <div id="weather-section">
+    <div id="weather-label">LIVE WEATHER</div>
+    <button id="btn-weather" onclick="generateWeather()">Get Weather</button>
+    <div id="weather-result"></div>
   </div>
 
   <div id="show-done-footer">
@@ -752,6 +780,159 @@
   }
   function escAttr(str) {
     return String(str).replace(/"/g,"&quot;");
+  }
+
+  // --- LIVE WEATHER ---
+  const weatherPlaces = {
+    SO: [
+      { name: "Southampton",     lat: 50.9097, lng: -1.4044 },
+      { name: "Eastleigh",       lat: 50.9675, lng: -1.3507 },
+      { name: "Hedge End",       lat: 50.9206, lng: -1.3018 },
+      { name: "Totton",          lat: 50.9175, lng: -1.4908 },
+      { name: "Romsey",          lat: 51.0000, lng: -1.4994 },
+      { name: "Winchester",      lat: 51.0632, lng: -1.3080 },
+      { name: "Chandlers Ford",  lat: 50.9833, lng: -1.3833 },
+      { name: "Bitterne",        lat: 50.9186, lng: -1.3601 },
+      { name: "Shirley",         lat: 50.9228, lng: -1.4289 },
+      { name: "Swaythling",      lat: 50.9378, lng: -1.3726 },
+      { name: "Bassett",         lat: 50.9400, lng: -1.4000 },
+      { name: "Hythe",           lat: 50.8726, lng: -1.3983 },
+      { name: "Bursledon",       lat: 50.8917, lng: -1.3083 },
+      { name: "Netley",          lat: 50.8833, lng: -1.3500 },
+      { name: "Hamble",          lat: 50.8667, lng: -1.3167 },
+      { name: "Botley",          lat: 50.9167, lng: -1.2667 },
+      { name: "Bishopstoke",     lat: 50.9667, lng: -1.3167 },
+      { name: "Fair Oak",        lat: 50.9667, lng: -1.2833 },
+      { name: "Locks Heath",     lat: 50.8667, lng: -1.2833 },
+      { name: "Swanwick",        lat: 50.8833, lng: -1.2667 },
+      { name: "Titchfield",      lat: 50.8500, lng: -1.2333 },
+      { name: "Warsash",         lat: 50.8500, lng: -1.2833 },
+      { name: "Nursling",        lat: 50.9333, lng: -1.4667 },
+      { name: "Chilworth",       lat: 50.9667, lng: -1.4000 },
+      { name: "North Baddesley", lat: 50.9833, lng: -1.4333 },
+      { name: "Calmore",         lat: 50.9333, lng: -1.5000 },
+      { name: "Marchwood",       lat: 50.8833, lng: -1.4500 },
+      { name: "Dibden Purlieu",  lat: 50.8667, lng: -1.4167 },
+      { name: "Blackfield",      lat: 50.8333, lng: -1.3667 },
+      { name: "Ower",            lat: 50.9667, lng: -1.5167 }
+    ],
+    PO: [
+      { name: "Southsea",          lat: 50.7833, lng: -1.0833 },
+      { name: "Portsmouth",        lat: 50.8058, lng: -1.0872 },
+      { name: "Gosport",           lat: 50.7950, lng: -1.1260 },
+      { name: "Waterlooville",     lat: 50.8833, lng: -1.0333 },
+      { name: "Havant",            lat: 50.8500, lng: -0.9833 },
+      { name: "Petersfield",       lat: 51.0000, lng: -0.9333 },
+      { name: "Portchester",       lat: 50.8333, lng: -1.1167 },
+      { name: "Emsworth",          lat: 50.8500, lng: -0.9333 },
+      { name: "Cowes",             lat: 50.7600, lng: -1.3000 },
+      { name: "Newport",           lat: 50.7000, lng: -1.2833 },
+      { name: "Ryde",              lat: 50.7333, lng: -1.1667 },
+      { name: "Shanklin",          lat: 50.6333, lng: -1.1667 },
+      { name: "Ventnor",           lat: 50.6000, lng: -1.2000 },
+      { name: "Freshwater",        lat: 50.6833, lng: -1.5167 },
+      { name: "Hayling Island",    lat: 50.8000, lng: -0.9667 },
+      { name: "Lee-on-the-Solent", lat: 50.8000, lng: -1.1833 },
+      { name: "Stubbington",       lat: 50.8333, lng: -1.2000 },
+      { name: "Horndean",          lat: 50.9167, lng: -1.0000 },
+      { name: "Denmead",           lat: 50.9000, lng: -1.0500 },
+      { name: "Rowlands Castle",   lat: 50.8833, lng: -0.9667 },
+      { name: "Bedhampton",        lat: 50.8500, lng: -1.0167 },
+      { name: "Fratton",           lat: 50.7967, lng: -1.0750 },
+      { name: "Cosham",            lat: 50.8417, lng: -1.0667 },
+      { name: "Paulsgrove",        lat: 50.8500, lng: -1.0833 },
+      { name: "Drayton",           lat: 50.8500, lng: -1.0500 },
+      { name: "Purbrook",          lat: 50.8667, lng: -1.0333 },
+      { name: "Totland",           lat: 50.6833, lng: -1.5333 },
+      { name: "Yarmouth",          lat: 50.7000, lng: -1.5000 },
+      { name: "Bembridge",         lat: 50.6833, lng: -1.0833 },
+      { name: "Fareham",           lat: 50.8500, lng: -1.1833 }
+    ],
+    BO: [
+      { name: "Bournemouth",          lat: 50.7192, lng: -1.8808 },
+      { name: "Poole",                lat: 50.7143, lng: -1.9872 },
+      { name: "Christchurch",         lat: 50.7350, lng: -1.7800 },
+      { name: "Boscombe",             lat: 50.7233, lng: -1.8383 },
+      { name: "Parkstone",            lat: 50.7167, lng: -1.9500 },
+      { name: "Ferndown",             lat: 50.7833, lng: -1.9000 },
+      { name: "Wimborne",             lat: 50.8000, lng: -1.9833 },
+      { name: "Westbourne",           lat: 50.7233, lng: -1.9117 },
+      { name: "Charminster",          lat: 50.7333, lng: -1.8667 },
+      { name: "Winton",               lat: 50.7333, lng: -1.8500 },
+      { name: "Moordown",             lat: 50.7500, lng: -1.8667 },
+      { name: "Kinson",               lat: 50.7667, lng: -1.9000 },
+      { name: "Canford Heath",        lat: 50.7500, lng: -1.9667 },
+      { name: "Broadstone",           lat: 50.7667, lng: -2.0000 },
+      { name: "Upton",                lat: 50.7333, lng: -2.0167 },
+      { name: "Wareham",              lat: 50.6833, lng: -2.1167 },
+      { name: "Swanage",              lat: 50.6083, lng: -1.9583 },
+      { name: "Sandbanks",            lat: 50.7000, lng: -1.9500 },
+      { name: "Branksome",            lat: 50.7167, lng: -1.9333 },
+      { name: "Verwood",              lat: 50.8833, lng: -1.8833 },
+      { name: "Merley",               lat: 50.7833, lng: -1.9833 },
+      { name: "Corfe Mullen",         lat: 50.7667, lng: -2.0333 },
+      { name: "Lytchett Matravers",   lat: 50.7333, lng: -2.0667 },
+      { name: "Lytchett Minster",     lat: 50.7167, lng: -2.0500 },
+      { name: "Wool",                 lat: 50.6833, lng: -2.2167 },
+      { name: "Bere Regis",           lat: 50.7500, lng: -2.2167 },
+      { name: "Alderholt",            lat: 50.9000, lng: -1.8667 },
+      { name: "Ringwood",             lat: 50.8500, lng: -1.7833 },
+      { name: "West Moors",           lat: 50.8333, lng: -1.8833 },
+      { name: "Sturminster Marshall", lat: 50.7667, lng: -2.0833 }
+    ]
+  };
+
+  function wmoToCondition(code) {
+    if (code === 0) return "clear skies";
+    if (code <= 2) return "partly cloudy";
+    if (code === 3) return "overcast";
+    if (code <= 49) return "foggy";
+    if (code <= 59) return "drizzly";
+    if (code <= 69) return "rainy";
+    if (code <= 79) return "snowy";
+    if (code <= 82) return "showery";
+    if (code <= 84) return "heavy showers";
+    if (code <= 99) return "thundery";
+    return "mixed";
+  }
+
+  async function generateWeather() {
+    const btn = document.getElementById("btn-weather");
+    const result = document.getElementById("weather-result");
+    btn.disabled = true;
+    result.textContent = "Fetching weather…";
+
+    function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+    const soPlace = pick(weatherPlaces.SO);
+    const poPlace = pick(weatherPlaces.PO);
+    const boPlace = pick(weatherPlaces.BO);
+
+    async function fetchWeather(place) {
+      const url = `https://api.open-meteo.com/v1/forecast?latitude=${place.lat}&longitude=${place.lng}&current_weather=true`;
+      const res = await fetch(url);
+      const data = await res.json();
+      return {
+        name: place.name,
+        temp: Math.round(data.current_weather.temperature),
+        code: data.current_weather.weathercode
+      };
+    }
+
+    try {
+      const [so, po, bo] = await Promise.all([
+        fetchWeather(soPlace),
+        fetchWeather(poPlace),
+        fetchWeather(boPlace)
+      ]);
+
+      const condition = wmoToCondition(so.code);
+      result.textContent = `Currently it's ${condition} across the south — ${so.temp}° in ${so.name}, ${po.temp}° in ${po.name} and ${bo.temp}° in ${bo.name}.`;
+    } catch(err) {
+      result.textContent = "Weather unavailable — please try again.";
+    }
+
+    btn.disabled = false;
   }
 
   // --- ALL TIME TOP 5 ---
