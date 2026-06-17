@@ -701,7 +701,7 @@
       markDoneBtn.classList.remove("confirm");
       state.dayOffset += 1;
       state.compScript = "";
-      state.features = { 4: "", 5: "", 6: "" };
+      state.features[5] = "";
       distributeReadScripts();
       renderAll();
       scheduleSave();
