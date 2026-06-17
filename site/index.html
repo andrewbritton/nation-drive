@@ -368,7 +368,7 @@
       </div>
       <div class="section" id="sec-b-7">
         <div class="section-label">B — Hour Feature</div>
-        <div class="muted-placeholder">Feature slot reserved for future use</div>
+        <textarea id="feature-7" placeholder="Enter hour feature…"></textarea>
       </div>
       <div class="section" id="sec-c-7">
         <div class="section-label">C — Read Script</div>
@@ -390,7 +390,7 @@
 
   const defaults = () => ({
     compScript: "",
-    features: { 4: "", 5: "", 6: "" },
+    features: { 4: "", 5: "", 6: "", 7: "" },
     scripts: [],
     dayOffset: 0
   });
@@ -569,7 +569,7 @@
   }
 
   function renderFeatures() {
-    [4, 5, 6].forEach(h => {
+    [4, 5, 6, 7].forEach(h => {
       const el = document.getElementById("feature-" + h);
       if (el) { el.value = state.features[h] ?? ""; autoResize(el); }
     });
@@ -646,7 +646,7 @@
   });
 
   // --- FEATURE TEXTAREAS ---
-  [4, 5, 6].forEach(h => {
+  [4, 5, 6, 7].forEach(h => {
     const el = document.getElementById("feature-" + h);
     if (!el) return;
     el.addEventListener("input", () => {
