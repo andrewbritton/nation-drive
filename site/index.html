@@ -272,27 +272,25 @@
     color: #000; padding: 8px 0; min-height: 36px;
   }
 
-  #weather-section {
-    background: #1a1a1a; color: #fff;
-    padding: 14px 24px;
-    display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+  .hour-weather {
+    background: #2a2a2a;
+    padding: 10px 16px;
+    display: flex; align-items: center; gap: 12px;
+    border-bottom: 1px solid #444;
   }
-  #weather-label {
-    font-size: 11px; font-weight: 700; letter-spacing: 2px;
-    color: #888; white-space: nowrap;
+  .weather-result {
+    font-size: 16px; font-weight: 600;
+    color: #fff; flex: 1;
   }
   #btn-weather {
     background: #c0392b; color: #fff;
-    border: none; padding: 7px 14px;
-    font-size: 15px; font-family: Arial, Helvetica, sans-serif;
-    border-radius: 4px; cursor: pointer; white-space: nowrap;
+    border: none; padding: 6px 12px;
+    font-size: 14px; font-family: Arial, Helvetica, sans-serif;
+    border-radius: 4px; cursor: pointer;
+    white-space: nowrap; flex-shrink: 0;
   }
   #btn-weather:hover { background: #a93226; }
   #btn-weather:disabled { background: #555; cursor: wait; }
-  #weather-result {
-    font-size: 18px; font-weight: 600;
-    color: #fff; flex: 1; min-width: 200px;
-  }
 
   #show-done-footer {
     background: #fff; border-top: 1px solid var(--border);
@@ -338,6 +336,10 @@
         <span class="hour-title">4PM</span>
         <span class="hour-meta">WhatsApp 07740 938 500</span>
       </div>
+      <div class="hour-weather">
+        <button id="btn-weather" onclick="generateWeather()">Get Weather</button>
+        <div id="weather-result-4" class="weather-result"></div>
+      </div>
       <div class="section" id="sec-a-4">
         <div class="section-label">A — Competition Script <button class="edit-toggle" id="comp-edit-btn">Edit</button></div>
         <div id="comp-readonly" class="muted-placeholder">No script yet</div>
@@ -363,6 +365,9 @@
         <span class="hour-title">5PM</span>
         <span class="hour-meta">WhatsApp 07740 938 500</span>
       </div>
+      <div class="hour-weather">
+        <div id="weather-result-5" class="weather-result"></div>
+      </div>
       <div class="section" id="sec-a-5">
         <div class="section-label">A — Competition Script</div>
         <div id="comp-mirror-5" class="muted-placeholder">No script yet</div>
@@ -381,6 +386,9 @@
       <div class="hour-header">
         <span class="hour-title">6PM</span>
         <span class="hour-meta">WhatsApp 07740 938 500</span>
+      </div>
+      <div class="hour-weather">
+        <div id="weather-result-6" class="weather-result"></div>
       </div>
       <div class="section" id="sec-a-6">
         <div class="section-label">A — Competition Script</div>
@@ -401,6 +409,9 @@
         <span class="hour-title">7PM</span>
         <span class="hour-meta">WhatsApp 07740 938 500</span>
       </div>
+      <div class="hour-weather">
+        <div id="weather-result-7" class="weather-result"></div>
+      </div>
       <div class="section" id="sec-a-7">
         <div class="section-label">A — Competition Script</div>
         <div id="comp-mirror-7" class="muted-placeholder">No script yet</div>
@@ -414,12 +425,6 @@
         <div id="script-7" class="script-display muted-placeholder">No script assigned</div>
       </div>
     </div>
-  </div>
-
-  <div id="weather-section">
-    <div id="weather-label">LIVE WEATHER</div>
-    <button id="btn-weather" onclick="generateWeather()">Get Weather</button>
-    <div id="weather-result"></div>
   </div>
 
   <div id="show-done-footer">
@@ -897,10 +902,8 @@
   }
 
   async function generateWeather() {
-    const btn = document.getElementById("btn-weather");
-    const result = document.getElementById("weather-result");
-    btn.disabled = true;
-    result.textContent = "Fetching weather…";
+    document.getElementById("btn-weather").disabled = true;
+    document.getElementById("weather-result-4").textContent = "Fetching weather…";
 
     function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
 
@@ -927,12 +930,17 @@
       ]);
 
       const condition = wmoToCondition(so.code);
-      result.textContent = `Currently it's ${condition} across the south — ${so.temp}° in ${so.name}, ${po.temp}° in ${po.name} and ${bo.temp}° in ${bo.name}.`;
+      const text = `Currently it's ${condition} across the south — ${so.temp}° in ${so.name}, ${po.temp}° in ${po.name} and ${bo.temp}° in ${bo.name}.`;
+      document.getElementById("weather-result-4").textContent = text;
+      document.getElementById("weather-result-5").textContent = text;
+      document.getElementById("weather-result-6").textContent = text;
+      document.getElementById("weather-result-7").textContent = text;
     } catch(err) {
-      result.textContent = "Weather unavailable — please try again.";
+      const errText = "Weather unavailable — please try again.";
+      document.getElementById("weather-result-4").textContent = errText;
     }
 
-    btn.disabled = false;
+    document.getElementById("btn-weather").disabled = false;
   }
 
   // --- ALL TIME TOP 5 ---
