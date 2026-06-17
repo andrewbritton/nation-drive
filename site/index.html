@@ -215,6 +215,7 @@
     font-size: 18px; line-height: 1.5;
     padding: 4px 0;
     color: #000000;
+    white-space: pre-wrap;
   }
   .script-display .star { color: var(--red); }
 
@@ -282,15 +283,15 @@
     font-size: 16px; font-weight: 600;
     color: #fff; flex: 1;
   }
-  #btn-weather {
+  .btn-weather {
     background: #c0392b; color: #fff;
     border: none; padding: 6px 12px;
     font-size: 14px; font-family: Arial, Helvetica, sans-serif;
     border-radius: 4px; cursor: pointer;
     white-space: nowrap; flex-shrink: 0;
   }
-  #btn-weather:hover { background: #a93226; }
-  #btn-weather:disabled { background: #555; cursor: wait; }
+  .btn-weather:hover { background: #a93226; }
+  .btn-weather:disabled { background: #555; cursor: wait; }
 
   #show-done-footer {
     background: #fff; border-top: 1px solid var(--border);
@@ -337,7 +338,7 @@
         <span class="hour-meta">WhatsApp 07740 938 500</span>
       </div>
       <div class="hour-weather">
-        <button id="btn-weather" onclick="generateWeather()">Get Weather</button>
+        <button class="btn-weather" onclick="generateWeather()">Get Weather</button>
         <div id="weather-result-4" class="weather-result"></div>
       </div>
       <div class="section" id="sec-a-4">
@@ -366,6 +367,7 @@
         <span class="hour-meta">WhatsApp 07740 938 500</span>
       </div>
       <div class="hour-weather">
+        <button class="btn-weather" onclick="generateWeather()">Get Weather</button>
         <div id="weather-result-5" class="weather-result"></div>
       </div>
       <div class="section" id="sec-a-5">
@@ -388,6 +390,7 @@
         <span class="hour-meta">WhatsApp 07740 938 500</span>
       </div>
       <div class="hour-weather">
+        <button class="btn-weather" onclick="generateWeather()">Get Weather</button>
         <div id="weather-result-6" class="weather-result"></div>
       </div>
       <div class="section" id="sec-a-6">
@@ -410,6 +413,7 @@
         <span class="hour-meta">WhatsApp 07740 938 500</span>
       </div>
       <div class="hour-weather">
+        <button class="btn-weather" onclick="generateWeather()">Get Weather</button>
         <div id="weather-result-7" class="weather-result"></div>
       </div>
       <div class="section" id="sec-a-7">
@@ -608,7 +612,7 @@
         el.innerHTML = "No script assigned";
       } else {
         el.className = "script-display";
-        const display = s.text && s.text.length > 120 ? s.text.slice(0, 120) + "…" : (s.text || "(empty)");
+        const display = s.text || "(empty)";
         if (s.mustRun) {
           el.innerHTML = '<span class="star">★</span> ' + escHtml(display);
         } else {
@@ -902,7 +906,7 @@
   }
 
   async function generateWeather() {
-    document.getElementById("btn-weather").disabled = true;
+    document.querySelectorAll(".btn-weather").forEach(b => b.disabled = true);
     document.getElementById("weather-result-4").textContent = "Fetching weather…";
 
     function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
@@ -940,7 +944,7 @@
       document.getElementById("weather-result-4").textContent = errText;
     }
 
-    document.getElementById("btn-weather").disabled = false;
+    document.querySelectorAll(".btn-weather").forEach(b => b.disabled = false);
   }
 
   // --- ALL TIME TOP 5 ---
