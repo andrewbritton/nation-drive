@@ -167,10 +167,12 @@
     background: #1a1a1a;
     color: #fff;
     padding: 10px 16px;
-    font-size: 24px; font-weight: 800;
     letter-spacing: 1px; text-transform: uppercase;
     border-left: 4px solid var(--red);
+    display: flex; align-items: baseline; gap: 1.5rem;
   }
+  .hour-title { font-size: 24px; font-weight: 800; }
+  .hour-meta { font-size: 15px; font-weight: 400; opacity: 0.85; }
 
   .section {
     padding: 12px 16px;
@@ -295,7 +297,10 @@
 
   <div id="grid">
     <div class="hour-col" data-hour="4">
-      <div class="hour-header">4pm</div>
+      <div class="hour-header">
+        <span class="hour-title">4PM</span>
+        <span class="hour-meta">WhatsApp 07740 938 500</span>
+      </div>
       <div class="section" id="sec-a-4">
         <div class="section-label">A — Competition Script <button class="edit-toggle" id="comp-edit-btn">Edit</button></div>
         <div id="comp-readonly" class="muted-placeholder">No script yet</div>
@@ -312,7 +317,10 @@
     </div>
 
     <div class="hour-col" data-hour="5">
-      <div class="hour-header">5pm</div>
+      <div class="hour-header">
+        <span class="hour-title">5PM</span>
+        <span class="hour-meta">WhatsApp 07740 938 500</span>
+      </div>
       <div class="section" id="sec-a-5">
         <div class="section-label">A — Competition Script</div>
         <div id="comp-mirror-5" class="muted-placeholder">No script yet</div>
@@ -328,7 +336,10 @@
     </div>
 
     <div class="hour-col" data-hour="6">
-      <div class="hour-header">6pm</div>
+      <div class="hour-header">
+        <span class="hour-title">6PM</span>
+        <span class="hour-meta">WhatsApp 07740 938 500</span>
+      </div>
       <div class="section" id="sec-a-6">
         <div class="section-label">A — Competition Script</div>
         <div id="comp-mirror-6" class="muted-placeholder">No script yet</div>
@@ -344,7 +355,10 @@
     </div>
 
     <div class="hour-col" data-hour="7">
-      <div class="hour-header">7pm</div>
+      <div class="hour-header">
+        <span class="hour-title">7PM</span>
+        <span class="hour-meta">WhatsApp 07740 938 500</span>
+      </div>
       <div class="section" id="sec-a-7">
         <div class="section-label">A — Competition Script</div>
         <div id="comp-mirror-7" class="muted-placeholder">No script yet</div>
