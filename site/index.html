@@ -602,6 +602,28 @@
     distribution = result;
   }
 
+  function applyMustRunOverflow() {
+    const mustRun = state.scripts.filter(i => i.mustRun);
+    if (mustRun.length <= 4) return;
+
+    const assignedIds = distribution.filter(id => id !== null);
+    const overflow = mustRun.filter(i => !assignedIds.includes(i.id));
+    if (overflow.length === 0) return;
+
+    const ta = document.getElementById("feature-7");
+    if (!ta) return;
+
+    const overflowNote = "\n\n⚠️ MUST-RUN OVERFLOW — these scripts did not fit into the hour slots today:\n" +
+      overflow.map(i => "• " + i.text).join("\n\n");
+
+    if (!ta.value.includes("⚠️ MUST-RUN OVERFLOW")) {
+      ta.value += overflowNote;
+      state.features[7] = ta.value;
+      autoResize(ta);
+      scheduleSave();
+    }
+  }
+
   function renderScripts() {
     [4, 5, 6, 7].forEach((hour, idx) => {
       const el = document.getElementById("script-" + hour);
@@ -661,6 +683,7 @@
     renderScripts();
     renderScriptsPool();
     renderDayOffset();
+    applyMustRunOverflow();
   }
 
   // --- CONTROLS PANEL ---
@@ -773,6 +796,7 @@
       state.dayOffset += 1;
       state.features[5] = "";
       distributeReadScripts();
+      applyMustRunOverflow();
       renderAll();
       scheduleSave();
     }
