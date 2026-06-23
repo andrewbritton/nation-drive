@@ -105,6 +105,19 @@
   }
   #btn-hide-comp:hover { border-color: #c0392b; color: #c0392b; }
   #btn-hide-comp.active { background: #c0392b; color: #fff; border-color: #c0392b; }
+  #btn-selina {
+    background: #1a1a1a;
+    color: #fff;
+    border: 1px solid #444;
+    padding: 5px 12px;
+    font-size: 14px;
+    font-family: Arial, Helvetica, sans-serif;
+    border-radius: 4px;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  #btn-selina:hover { border-color: #c0392b; color: #c0392b; }
+  #btn-selina.active { background: #c0392b; color: #fff; border-color: #c0392b; }
 
   /* CONTROLS PANEL */
   #controls-panel {
@@ -334,6 +347,7 @@
     <span id="sync-status" class="ok">Saved ✓</span>
     <button id="controls-toggle">Controls</button>
     <button id="btn-hide-comp" onclick="toggleCompScripts()">Hide Competition</button>
+    <button id="btn-selina" onclick="toggleSelinaView()">Selina Links</button>
   </div>
 
   <div id="controls-panel">
@@ -1052,6 +1066,35 @@
     renderAll();
     document.querySelectorAll("textarea").forEach(autoResize);
     applyCompScriptVisibility();
+    applySelinaView();
+  }
+
+  function toggleSelinaView() {
+    const active = localStorage.getItem("selinaView") === "true";
+    const nowActive = !active;
+    localStorage.setItem("selinaView", nowActive);
+    applySelinaView();
+  }
+
+  function applySelinaView() {
+    const active = localStorage.getItem("selinaView") === "true";
+    const btn = document.getElementById("btn-selina");
+
+    const hideSelectors = [
+      "#sec-a-4", "#sec-a-5", "#sec-a-6", "#sec-a-7",
+      "#sec-c-4", "#sec-c-5", "#sec-c-6", "#sec-c-7",
+      "#sec-b-7",
+      "#weather-section",
+      "#sec-top5-4"
+    ];
+
+    hideSelectors.forEach(sel => {
+      const el = document.querySelector(sel);
+      if (el) el.style.display = active ? "none" : "";
+    });
+
+    btn.textContent = active ? "Exit Selina View" : "Selina Links";
+    btn.classList.toggle("active", active);
   }
 
   function toggleCompScripts() {
